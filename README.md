@@ -22,7 +22,7 @@ Two-phase Python receipt image sorter using the Google Gemini Vision API and a S
    Never commit `.env` (it is in `.gitignore`).
 
 3. **Put images to process**  
-   Place receipt/document images in `./images/` (or the folder set in `config.py` as `INPUT_DIR`).
+   Place receipt/document images in `./to_process/` (or the folder set in `config.py` as `INPUT_DIR`).
 
 4. **Phase 1 — Analyze**
    ```bash
@@ -34,7 +34,7 @@ Two-phase Python receipt image sorter using the Google Gemini Vision API and a S
    ```bash
    streamlit run app.py
    ```
-   Open the GUI in your browser, review and approve rows, then click **Confirm & Sort** to move files into buckets under `./sorted/`.
+   Open the GUI in your browser. Pick a run from the **Recent runs** list if you have several. Review and edit the table (category, destination folder, approved). Use **Confirm & Sort** only when you are ready — no files are moved until you confirm in the dialog. After sorting, a summary is shown and you can open the sorted folder.
 
 ## Dev Container
 
@@ -42,7 +42,7 @@ Open this folder in VS Code or Cursor, then run **Reopen in Container** (Command
 
 ## Git
 
-When you're ready to version control: run `git init` in the project root, then add and commit. `.gitignore` is set up so `.env`, `runs/`, `images/`, `sorted/`, and common Python/IDE artifacts are not committed.
+When you're ready to version control: run `git init` in the project root, then add and commit. `.gitignore` is set up so `.env`, `runs/`, `to_process/`, `sorted/`, and common Python/IDE artifacts are not committed.
 
 ## Plan
 
