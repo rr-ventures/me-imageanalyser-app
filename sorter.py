@@ -1,11 +1,54 @@
 """
-Receipt Sorter — Move approved images into bucket folders. No action until explicitly executed.
+Receipt Sorter — Move approved images into bucket folders under processed/.
+ALL files get renamed: short-description-date.ext (+ price if it's a receipt).
 """
 import json
+import re
 import shutil
+from datetime import datetime
 from pathlib import Path
 
 import config
+
+
+def generate_filename(row: dict, suffix: str) -> str:
+    """
+    Build a clean renamed filename for any image.
+    Format: short-description-date.ext  (+ price for receipts)
+    All lowercase, hyphens, no spaces.
+    """
+    description = row.get("description")
+    vendor = row.get("vendor")
+    total = row.get("total")
+    date = row.get("date")
+    category = (row.get("category") or "").lower()
+
+    # Short name: prefer vendor (2 words max), else first 2-3 words of description
+    if vendor:
+        words = re.findall(r"[a-zA-Z0-9]+", vendor)
+        name = "-".join(words[:2])
+    elif description:
+        words = re.findall(r"[a-zA-Z0-9]+", description)
+        name = "-".join(words[:3])
+    else:
+        name = category if category and category != "unknown" else "image"
+
+    name = re.sub(r"[^a-z0-9]+", "-", name.lower()).strip("-")
+    if not name:
+        name = "file"
+
+    parts = [name]
+
+    if date:
+        parts.append(date)
+
+    is_receipt = category in ("receipt", "invoice")
+    if is_receipt and total is not None and str(total).strip():
+        price = re.sub(r"[^0-9.]", "", str(total))
+        if price:
+            parts.append(price)
+
+    return "-".join(parts) + suffix
 
 
 def execute(
@@ -14,9 +57,9 @@ def execute(
     runs_dir: str | Path,
 ) -> dict:
     """
-    Move only rows where approved is True. Destination: user_folder if set, else suggested_folder.
-    Creates bucket folders under output_dir. On filename collision appends _1, _2, etc.
-    Saves final state to runs/{run_id}_sorted_manifest.json and returns summary.
+    Move approved rows into bucket subfolders under output_dir.
+    All files are renamed via generate_filename.
+    Returns a summary dict.
     """
     output_dir = Path(output_dir).resolve()
     runs_dir = Path(runs_dir).resolve()
@@ -50,41 +93,31 @@ def execute(
         if not src.exists():
             errors.append(f"Missing file: {src}")
             continue
+
         dest_dir = output_dir / folder
-        base_name = src.name
-        stem = src.stem
-        suffix = src.suffix
-        dest_name = base_name
+        dest_name = generate_filename(row, src.suffix.lower())
+
+        stem = Path(dest_name).stem
+        suffix = Path(dest_name).suffix
+        counter = 1
         while (dest_dir / dest_name).exists() or dest_name in used_names[folder]:
-            # Collision: append _1, _2, ...
-            if dest_name == base_name:
-                next_num = 1
-            else:
-                try:
-                    next_num = int(dest_name.rsplit("_", 1)[-1]) + 1
-                except (ValueError, IndexError):
-                    next_num = 1
-            dest_name = f"{stem}_{next_num}{suffix}"
+            dest_name = f"{stem}-{counter}{suffix}"
+            counter += 1
+
         try:
             shutil.move(str(src), str(dest_dir / dest_name))
             used_names[folder].add(dest_name)
             per_folder[folder] = per_folder.get(folder, 0) + 1
+            row["renamed_to"] = dest_name
+            row["moved_to_folder"] = folder
         except OSError as e:
             errors.append(f"{src}: {e}")
 
-    # Build sorted manifest (same structure + sorted metadata)
     sorted_manifest = dict(manifest)
-    sorted_manifest["sorted_at"] = __import__("datetime").datetime.now().isoformat()
+    sorted_manifest["sorted_at"] = datetime.now().isoformat()
     sorted_manifest["output_dir"] = str(output_dir)
     sorted_manifest["moved_per_folder"] = per_folder
-    sorted_manifest["errors"] = errors
-    # Mark moved rows (optional: add destination path to each image)
-    for row in sorted_manifest.get("images", []):
-        if row.get("approved"):
-            folder = (row.get("user_folder") or row.get("suggested_folder") or "unknown").strip()
-            if folder not in config.BUCKETS:
-                folder = "unknown"
-            row["moved_to_folder"] = folder
+    sorted_manifest["sort_errors"] = errors
 
     sorted_path = runs_dir / f"{run_id}_sorted_manifest.json"
     with open(sorted_path, "w", encoding="utf-8") as f:

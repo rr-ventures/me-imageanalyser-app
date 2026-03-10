@@ -8,6 +8,7 @@ runs/
 images/
 to_process/
 sorted/
+processed/
 
 # Python
 __pycache__/

@@ -7,7 +7,7 @@ Paths are relative to project root (cwd when running main.py / app.py).
 INPUT_DIR = "./to_process"
 
 # Output: folder where sorted subfolders are created after GUI confirm
-OUTPUT_DIR = "./sorted"
+OUTPUT_DIR = "./processed"
 
 # Run history: one manifest + one errors file per analysis run
 RUNS_DIR = "./runs"
