@@ -1,0 +1,34 @@
+# API key and secrets
+.env
+.env.local
+.env.*.local
+
+# Run data and I/O (do not commit)
+runs/
+images/
+to_process/
+sorted/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+ENV/
+.eggs/
+*.egg-info/
+*.egg
+
+# IDE / editor
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
