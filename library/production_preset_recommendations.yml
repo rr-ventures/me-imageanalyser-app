@@ -1,14 +1,12 @@
-artifact_name: lightroom_preset_recommendations_v1
+artifact_name: production_preset_recommendations
 artifact_type: scenario_to_preset_lookup
-status: placeholder_pending_deep_research
-last_updated: "2026-03-11"
+status: research_backed
+last_updated: "2026-03-12"
 note: >
-  This is a placeholder with best-guess recommendations.
-  It will be replaced with the deep research artifact once complete.
-  The app loads this file and matches photo metadata to scenarios.
-
-# Each scenario has conditions (matched against AI-extracted metadata)
-# and a preset recommendation with evidence.
+  Maps photo metadata to specific Lightroom Adaptive preset recommendations.
+  Each scenario targets a specific lighting/scene combination with evidence-based
+  preset choices. Complements the filter library (broad styles) with granular
+  per-scenario Adaptive preset guidance.
 
 scenarios:
   - id: outdoor_golden_hour
@@ -204,7 +202,7 @@ scenarios:
       name: "Adaptive: Portrait > Polished Portrait"
       path: "Premium > Adaptive: Portrait > Polished Portrait"
       also_apply: null
-      evidence: "Professional photos need the most subtle editing. Polished Portrait provides the minimum viable enhancement — sharp, clean, natural. Trustworthiness is #1 predictor of right-swipes (Photofeeler)."
+      evidence: "Professional photos need the most subtle editing. Polished Portrait provides the minimum viable enhancement — sharp, clean, natural. Trustworthiness is #1 predictor of right-swipes after initial attractiveness (Photofeeler)."
       avoid: "Anything warm/stylized — formal photos should read as natural and reliable"
 
   - id: travel_scenic
@@ -272,7 +270,6 @@ scenarios:
       evidence: "Light skin smoothing can improve photo quality perception. But over-smoothing is the #1 cause of 'catfish' perception. Use conservatively."
       avoid: "Stacking with Glamour Portrait (double-smoothing creates obviously fake skin)"
 
-# Danger zones — presets that risk looking fake
 danger_zones:
   - preset: "Smooth Facial Skin"
     risk: "Over-smoothing triggers uncanny valley / catfish perception"

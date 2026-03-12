@@ -1,4 +1,4 @@
-artifact_name: dating_profile_filter_library_v2
+artifact_name: production_filter_library
 artifact_type: app_runtime_library
 goal: >
   Simplified library for choosing the top 2 edit styles for dating/profile photos.

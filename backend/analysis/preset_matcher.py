@@ -77,11 +77,11 @@ def get_recommendation(metadata: dict) -> dict | None:
     if best and best_score > 0:
         return best
 
-    for scenario in scenarios:
-        if scenario.get("id") in ("outdoor_overcast", "indoor_window_light"):
-            return scenario
-
-    return scenarios[0] if scenarios else None
+    fallback = next(
+        (s for s in scenarios if s.get("id") == "outdoor_overcast"),
+        scenarios[0] if scenarios else None,
+    )
+    return fallback
 
 
 def get_danger_zones() -> list:

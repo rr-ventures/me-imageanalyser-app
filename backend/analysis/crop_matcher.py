@@ -9,7 +9,7 @@ from backend import config
 
 _cached: dict | None = None
 
-CROP_ARTIFACT_PATH = config.LIBRARY_DIR / "crop_recommendations.yml"
+CROP_ARTIFACT_PATH = config.LIBRARY_DIR / "production_crop_recommendations.yml"
 
 
 def _load():

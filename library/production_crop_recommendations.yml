@@ -1,4 +1,4 @@
-artifact_name: crop_recommendations_v2
+artifact_name: production_crop_recommendations
 artifact_type: scenario_to_crop_lookup
 status: research_backed
 last_updated: "2026-03-12"

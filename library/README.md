@@ -1,12 +1,22 @@
-# Style Library
+# Production Artifacts
 
-This folder contains the YAML library that drives all style decisions.
+This folder contains the YAML artifacts that drive all recommendations.
+Only files prefixed with `production_` are used by the app at runtime.
+
+## The three production artifacts
+
+| File | What it does |
+|------|-------------|
+| `production_filter_library.yml` | 6 broad editing styles with Lightroom presets and slider values. The style selector picks the best overall approach for each photo. |
+| `production_preset_recommendations.yml` | 20 scenario-specific Lightroom Adaptive preset recommendations. The preset matcher picks the exact Adaptive preset to click in Lightroom. |
+| `production_crop_recommendations.yml` | 11 scenario-specific crop recommendations with aspect ratios, focus points, and platform guidance. |
 
 ## How it works
 
 1. **Gemini AI** looks at your photo and extracts 6 simple metadata fields
-2. **The selector** compares that metadata against the routing rules in the YAML file
-3. **The app** returns the top 2 styles with Lightroom presets and Facetune checklists
+2. **The style selector** compares metadata against routing rules in the filter library
+3. **The preset matcher** finds the best scenario-specific Adaptive preset
+4. **The crop matcher** recommends 2-3 crop options with evidence
 
 ## The 6 metadata fields
 
@@ -30,12 +40,16 @@ This folder contains the YAML library that drives all style decisions.
 | `nightlife_contrast` | Bars, clubs, night photos | Punchy, color-corrected |
 | `black_white` | Photos with bad/weird colors | Classic B&W rescue |
 
-## Editing the library
+## Editing the artifacts
 
-You can edit `dating_profile_filter_library_v2.yml` to:
+You can edit `production_filter_library.yml` to:
 - Adjust which style is picked for which situation
 - Change Lightroom slider values
 - Update preset recommendations
-- Modify Facetune checklists
 
 The app re-reads the library when it starts, so just restart after editing.
+
+## Gemini models
+
+- **Analysis:** Gemini 3.1 Pro Preview (`gemini-3.1-pro-preview`)
+- **Image Enhancement:** Nano Banana 2 (`gemini-3.1-flash-image-preview`)

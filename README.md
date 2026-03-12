@@ -1,7 +1,7 @@
 # Dating Profile Photo Analyzer
 
 Analyze your dating profile photos with AI. Get style recommendations,
-Lightroom preset suggestions, and Facetune checklists — all in a clean
+Lightroom preset suggestions, and crop recommendations — all in a clean
 React UI backed by a FastAPI backend and Google Gemini.
 
 ## How it works
@@ -11,7 +11,7 @@ React UI backed by a FastAPI backend and Google Gemini.
 3. You pick a Gemini model (cheap/fast or expensive/accurate)
 4. Gemini analyzes each photo and extracts metadata (scene, lighting, quality, etc.)
 5. The selector matches metadata against the YAML style library
-6. You get the top 2 style recommendations with Lightroom presets and Facetune checklists
+6. You get the top 2 style recommendations with Lightroom presets and crop guidance
 
 ## Quick start
 

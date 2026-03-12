@@ -10,38 +10,24 @@ OUTPUT_DIR = DATA_DIR / "processed"
 THUMBNAILS_DIR = DATA_DIR / "thumbnails"
 RUNS_DIR = DATA_DIR / "runs"
 LIBRARY_DIR = PROJECT_ROOT / "library"
-LIBRARY_PATH = LIBRARY_DIR / "dating_profile_filter_library_v2.yml"
-PRESET_RECOMMENDATIONS_PATH = LIBRARY_DIR / "lightroom_preset_recommendations.yml"
+LIBRARY_PATH = LIBRARY_DIR / "production_filter_library.yml"
+PRESET_RECOMMENDATIONS_PATH = LIBRARY_DIR / "production_preset_recommendations.yml"
 
 # ── Gemini Models ────────────────────────────────────────────────────────────
-# Each model has a display name, ID, and pricing per 1M tokens.
-# Users can pick which model to use for analysis vs editing.
+# State-of-the-art models only. Analysis uses Gemini 3.1 Pro Preview.
+# Image enhancement uses Nano Banana 2 (gemini-3.1-flash-image-preview).
 
 AVAILABLE_MODELS = {
-    "gemini-2.0-flash": {
-        "display_name": "Gemini 2.0 Flash",
-        "description": "Cheapest and fastest. Good enough for metadata extraction.",
-        "input_per_1m": 0.10,
-        "output_per_1m": 0.40,
-        "supports_images": True,
-    },
-    "gemini-2.5-flash": {
-        "display_name": "Gemini 2.5 Flash",
-        "description": "Fast and affordable. Great balance of speed and accuracy.",
-        "input_per_1m": 0.15,
-        "output_per_1m": 0.60,
-        "supports_images": True,
-    },
-    "gemini-2.5-pro": {
-        "display_name": "Gemini 2.5 Pro",
-        "description": "Most accurate for analysis. Higher cost.",
-        "input_per_1m": 1.25,
-        "output_per_1m": 10.00,
+    "gemini-3.1-pro-preview": {
+        "display_name": "Gemini 3.1 Pro (Latest)",
+        "description": "State-of-the-art reasoning and analysis. Best for metadata extraction and recommendations.",
+        "input_per_1m": 2.00,
+        "output_per_1m": 12.00,
         "supports_images": True,
     },
 }
 
-DEFAULT_ANALYSIS_MODEL = "gemini-2.5-flash"
+DEFAULT_ANALYSIS_MODEL = "gemini-3.1-pro-preview"
 
 # ── Image Processing ─────────────────────────────────────────────────────────
 
@@ -53,7 +39,7 @@ BATCH_SIZE = 20
 
 MIN_RESOLUTION_SHORT_SIDE = 1080
 TARGET_UPSCALE_RESOLUTION = 2048
-EDIT_MODEL = "gemini-2.0-flash-exp"
+EDIT_MODEL = "gemini-3.1-flash-image-preview"
 
 # ── Cost Estimation ──────────────────────────────────────────────────────────
 # Rough estimates for per-image token usage (varies by image size and model)
