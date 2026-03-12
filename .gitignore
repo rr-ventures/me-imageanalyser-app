@@ -1,35 +1,38 @@
-# API key and secrets
+# Environment
 .env
-.env.local
-.env.*.local
-
-# Run data and I/O (do not commit)
-runs/
-images/
-to_process/
-sorted/
-processed/
+.venv/
+venv/
 
 # Python
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-.venv/
-venv/
-ENV/
-.eggs/
+*.pyc
+*.pyo
 *.egg-info/
-*.egg
+dist/
+build/
 
-# IDE / editor
+# Node / React
+node_modules/
+frontend/dist/
+frontend/.env
+
+# Runtime data
+data/to_process/
+data/processed/
+data/thumbnails/
+data/runs/
+
+# IDE
 .idea/
 .vscode/
 *.swp
 *.swo
-*~
 
 # OS
 .DS_Store
 Thumbs.db
+
+# Legacy runtime data (if any remain)
+processed/
+runs/
+to_process/

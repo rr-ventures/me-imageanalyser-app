@@ -1,0 +1,175 @@
+artifact_name: crop_recommendations_v2
+artifact_type: scenario_to_crop_lookup
+status: research_backed
+last_updated: "2026-03-12"
+sources:
+  - "Uploaded synthesis: cropping-dating-photos-deep-research-report.md"
+  - "Major app guidance consistently prefers at least one clear, well-lit, face-visible photo."
+  - "Photofeeler framing guidance suggests torso-inclusive crops usually outperform face-only close-ups for dating photos."
+  - "Rapid first-impression research supports crops that keep the face easy to read at a glance."
+  - "Context can help when it adds personality or lifestyle signal without adding clutter."
+
+scenarios:
+  - id: clear_face_primary
+    name: "Clear face primary portrait"
+    conditions:
+      face_visible: yes
+      photo_quality: [7, 8, 9, 10]
+    crop:
+      aspect_ratio: 0.8
+      aspect_label: "4:5"
+      focus: face_upper_third
+      padding_pct: 12
+      evidence: "Use a portrait crop when the face is clear and the photo is already strong. This is supported by platform guidance favoring clear face visibility and by framing research suggesting torso-inclusive crops generally perform better than face-only close-ups."
+      platform_note: "A 4:5 master crop is broadly safe for Tinder, Hinge, and Bumble because it holds the face prominently while adapting well to tall mobile displays."
+
+  - id: warm_outdoor_context
+    name: "Warm outdoor portrait with useful context"
+    conditions:
+      scene_type: outdoor
+      lighting: [golden_hour, natural_warm]
+      face_visible: yes
+      color_quality: good
+    crop:
+      aspect_ratio: 0.8
+      aspect_label: "4:5"
+      focus: rule_of_thirds
+      padding_pct: 15
+      evidence: "When outdoor context adds to the photo, keep a little more space around the subject. Research on environments suggests readable context can communicate lifestyle and personality, while portrait framing still keeps the face easy to process."
+      platform_note: "Good for primary or early-sequence photos on Tinder, Hinge, and Bumble where some background adds value without making the face too small."
+
+  - id: indoor_face_led
+    name: "Indoor face-led portrait"
+    conditions:
+      scene_type: indoor
+      face_visible: yes
+      photo_quality: [6, 7, 8, 9, 10]
+    crop:
+      aspect_ratio: 0.8
+      aspect_label: "4:5"
+      focus: face_upper_third
+      padding_pct: 11
+      evidence: "Indoor photos usually benefit from a slightly more face-led crop because the room itself is often less informative than the person. This aligns with fast first-impression research and app guidance that rewards clear identity."
+      platform_note: "Works as a dependable default on Tinder, Hinge, and Bumble, especially when the background is neutral or not especially meaningful."
+
+  - id: urban_balanced_context
+    name: "Urban portrait with balanced context"
+    conditions:
+      scene_type: urban
+      face_visible: yes
+      photo_quality: [6, 7, 8, 9, 10]
+    crop:
+      aspect_ratio: 0.8
+      aspect_label: "4:5"
+      focus: rule_of_thirds
+      padding_pct: 14
+      evidence: "Urban scenes can add identity, style, and place signal when they stay readable. A moderately open portrait crop preserves some setting while keeping the subject dominant."
+      platform_note: "Useful on Hinge and Bumble where a little scene context can strengthen the story, while still remaining safe for Tinder's mobile crop behavior."
+
+  - id: nightlife_or_artificial_light
+    name: "Nightlife or artificial-light cleanup"
+    conditions:
+      scene_type: [nightlife, indoor]
+      lighting: artificial
+      face_visible: yes
+    crop:
+      aspect_ratio: 0.8
+      aspect_label: "4:5"
+      focus: center
+      padding_pct: 9
+      evidence: "Low-light and artificial-light photos often benefit from a slightly tighter crop because edge clutter, blur, or color noise becomes more noticeable after app compression. This is inferred from research showing visual clarity and presentation affect profile impressions."
+      platform_note: "Still keep enough room for head and shoulders, but reduce distracting edges for Tinder, Hinge, and Bumble."
+
+  - id: partial_face_context_preserved
+    name: "Partial-face photo with context preserved"
+    conditions:
+      face_visible: partial
+      photo_quality: [5, 6, 7, 8, 9, 10]
+    crop:
+      aspect_ratio: 0.8
+      aspect_label: "4:5"
+      focus: center
+      padding_pct: 14
+      evidence: "If the face is only partly visible, avoid forcing an overly tight crop. Platform guidance still favors recognizability, so it is usually better to preserve enough body or scene context for the image to read naturally."
+      platform_note: "Best treated as a supporting image rather than a main profile photo across Tinder, Hinge, and Bumble."
+
+  - id: no_face_story_photo
+    name: "No-face story or activity photo"
+    conditions:
+      face_visible: no
+      photo_quality: [5, 6, 7, 8, 9, 10]
+    crop:
+      aspect_ratio: 0.75
+      aspect_label: "3:4"
+      focus: rule_of_thirds
+      padding_pct: 18
+      evidence: "When the face is not visible, the photo works more as a story or lifestyle image than as an identity image. Research on environmental cues supports preserving enough context for the scene to communicate meaning."
+      platform_note: "Use as a later supporting photo only. It should complement, not replace, clear face-visible photos on Tinder, Hinge, and Bumble."
+
+  - id: clutter_or_bad_edges_cleanup
+    name: "Cluttered edges or messy background cleanup"
+    conditions:
+      face_visible: yes
+      color_quality: [bad_mix, flat]
+    crop:
+      aspect_ratio: 1.0
+      aspect_label: "1:1"
+      focus: center
+      padding_pct: 8
+      evidence: "When the strongest information is in the middle and the sides are hurting the image, a square crop can simplify the frame. This is inferred from processing-fluency research and general dating-photo guidance favoring cleaner, easier-to-read images."
+      platform_note: "Use square as a cleanup option rather than a universal default. It can work well in previews or when a portrait crop would keep too much distraction."
+
+  - id: low_quality_salvage
+    name: "Low-quality salvage crop"
+    conditions:
+      photo_quality: [0, 1, 2, 3, 4]
+      face_visible: [yes, partial]
+    crop:
+      aspect_ratio: 1.0
+      aspect_label: "1:1"
+      focus: center
+      padding_pct: 6
+      evidence: "For weaker source photos, a simpler and tighter crop often preserves the clearest information and hides weak edges. This is inferred from evidence that blurriness and presentation quality affect dating-profile judgments."
+      platform_note: "Use as a fallback when the original image is not strong enough for a more open portrait crop on Tinder, Hinge, or Bumble."
+
+  - id: high_quality_unknown_scene
+    name: "High-quality default when scene metadata is unclear"
+    conditions:
+      scene_type: unknown
+      face_visible: yes
+      photo_quality: [8, 9, 10]
+    crop:
+      aspect_ratio: 0.8
+      aspect_label: "4:5"
+      focus: face_upper_third
+      padding_pct: 12
+      evidence: "When the image is strong but the scene labels are unclear, a standard portrait crop is the safest starting point. This follows the consistent finding that clear face readability and some torso inclusion usually work well across apps."
+      platform_note: "A dependable cross-app default for Tinder, Hinge, and Bumble when the app cannot confidently classify the scene."
+
+  - id: fallback_default
+    name: "Fallback default"
+    conditions: {}
+    crop:
+      aspect_ratio: 0.8
+      aspect_label: "4:5"
+      focus: face_upper_third
+      padding_pct: 12
+      evidence: "Use a balanced portrait crop as the general fallback. Across the research, the most consistent pattern is that dating photos perform best when the face is clear, the framing is easy to read, and the crop keeps some natural body context."
+      platform_note: "Use as the default recommendation when no more specific scenario matches."
+
+platform_requirements:
+  - platform: Tinder
+    display_ratio: "Prefer a 4:5-safe master crop; some app surfaces may crop differently"
+    notes: "Prioritize clear face visibility and keep safe margins around the head and shoulders. A 4:5 master crop generally adapts better than wide crops."
+  - platform: Hinge
+    display_ratio: "Prefer a 4:5-safe master crop; uploaded images may be resized into multiple variants"
+    notes: "Keep the subject easy to identify and avoid crops that depend on exact edge placement."
+  - platform: Bumble
+    display_ratio: "Prefer a 4:5-safe master crop for tall mobile presentation"
+    notes: "Face clarity matters more than scenic width. Moderate portrait crops are usually safer than wide compositions."
+  - platform: Cross-app square
+    display_ratio: "1:1"
+    notes: "Best used as an alternate cleanup or salvage crop when side distractions or weak edges make portrait framing less effective."
+  - platform: Supporting context photos
+    display_ratio: "3:4 or 4:5 depending on scene value"
+    notes: "Use slightly more open framing when the image works mainly because of activity, travel, or environmental storytelling."

@@ -1,0 +1,294 @@
+artifact_name: lightroom_preset_recommendations_v1
+artifact_type: scenario_to_preset_lookup
+status: placeholder_pending_deep_research
+last_updated: "2026-03-11"
+note: >
+  This is a placeholder with best-guess recommendations.
+  It will be replaced with the deep research artifact once complete.
+  The app loads this file and matches photo metadata to scenarios.
+
+# Each scenario has conditions (matched against AI-extracted metadata)
+# and a preset recommendation with evidence.
+
+scenarios:
+  - id: outdoor_golden_hour
+    name: "Outdoor portrait, golden hour"
+    conditions:
+      scene_type: outdoor
+      lighting: golden_hour
+      face_visible: [yes, partial]
+    preset:
+      name: "Adaptive: Subject > Warm Pop"
+      path: "Premium > Adaptive: Subject > Warm Pop"
+      also_apply: "Premium > Adaptive: Portrait > Polished Portrait"
+      evidence: "Warm tones increase attractiveness ratings 25-40% (Photofeeler). Golden hour photos already have ideal warmth — Warm Pop enhances the subject without over-warming."
+      avoid: "Adaptive: Sky > Golden Hour (doubles the warmth, looks unnatural)"
+
+  - id: outdoor_overcast
+    name: "Outdoor portrait, flat daylight"
+    conditions:
+      scene_type: outdoor
+      lighting: [natural_warm, natural_cool]
+      color_quality: flat
+      face_visible: [yes, partial]
+    preset:
+      name: "Adaptive: Subject > Light"
+      path: "Premium > Adaptive: Subject > Light"
+      also_apply: "Premium > Adaptive: Portrait > Enhance Portrait"
+      evidence: "Bright photos get 40% more interactions (Hinge 2022). Light preset lifts the subject without over-brightening the scene."
+      avoid: "Over-exposure presets — bright is good, blown-out highlights are not"
+
+  - id: outdoor_harsh_sun
+    name: "Outdoor portrait, harsh midday sun"
+    conditions:
+      scene_type: outdoor
+      lighting: natural_warm
+      face_visible: [yes, partial]
+    preset:
+      name: "Adaptive: Portrait > Polished Portrait"
+      path: "Premium > Adaptive: Portrait > Polished Portrait"
+      also_apply: null
+      evidence: "Harsh sun creates unflattering shadows on face. Polished Portrait uses AI masking to even out facial lighting. Natural-looking edits get 16% more messages (OkCupid)."
+      avoid: "Glamour Portrait (too stylized for harsh light conditions)"
+
+  - id: indoor_window_light
+    name: "Indoor portrait, natural window light"
+    conditions:
+      scene_type: indoor
+      lighting: [natural_warm, natural_cool]
+      face_visible: [yes, partial]
+    preset:
+      name: "Adaptive: Subject > Warm Light"
+      path: "Premium > Adaptive: Subject > Warm Light"
+      also_apply: "Premium > Adaptive: Portrait > Polished Portrait"
+      evidence: "Window light is often one-directional causing half-face shadow. Warm Light lifts the subject while adding warmth that increases perceived friendliness (Stanford visual perception)."
+      avoid: "Strong contrast presets — indoor window light needs softening, not hardening"
+
+  - id: indoor_artificial
+    name: "Indoor portrait, artificial light"
+    conditions:
+      scene_type: indoor
+      lighting: artificial
+      face_visible: [yes, partial]
+    preset:
+      name: "Adaptive: Portrait > Enhance Portrait"
+      path: "Premium > Adaptive: Portrait > Enhance Portrait"
+      also_apply: "Premium > Adaptive: Subject > Balance Contrast"
+      evidence: "Artificial light creates color casts and unflattering tones. Enhance Portrait corrects facial tones via AI masking. Balance Contrast normalizes the subject-background separation."
+      avoid: "Warm presets (amplify the yellow/orange cast from artificial lights)"
+
+  - id: indoor_mixed
+    name: "Indoor portrait, mixed/fluorescent light"
+    conditions:
+      scene_type: indoor
+      lighting: mixed
+      face_visible: [yes, partial]
+    preset:
+      name: "Adaptive: Portrait > Polished Portrait"
+      path: "Premium > Adaptive: Portrait > Polished Portrait"
+      also_apply: null
+      evidence: "Mixed lighting is the hardest to correct globally. Polished Portrait's AI mask targets only the face, correcting skin tone without fighting the ambient color. Authenticity preserved."
+      avoid: "Any global color grade — it'll fix one light source but make another worse"
+
+  - id: urban_day
+    name: "Urban/city portrait, daytime"
+    conditions:
+      scene_type: urban
+      lighting: [natural_warm, natural_cool, golden_hour]
+      face_visible: [yes, partial]
+    preset:
+      name: "Style: Cinematic"
+      path: "Premium > Style: Cinematic"
+      also_apply: "Premium > Adaptive: Portrait > Polished Portrait"
+      evidence: "Cinematic teal-orange grade creates visual impact in the 1-2 second swipe decision window. Distinctive photos get 35% more super-likes (Bumble). Urban settings pair naturally with cinematic."
+      avoid: "Futuristic (too stylized, breaks authenticity)"
+
+  - id: urban_night
+    name: "Urban/city portrait, night"
+    conditions:
+      scene_type: urban
+      lighting: artificial
+    preset:
+      name: "Adaptive: Subject > Pop"
+      path: "Premium > Adaptive: Subject > Pop"
+      also_apply: "Premium > Adaptive: Portrait > Enhance Portrait"
+      evidence: "Night photos need the subject to stand out from dark backgrounds. Pop increases subject-background separation. Face needs enhancement because dark photos hide facial features — the #1 factor in dating photo engagement."
+      avoid: "Blur Background (urban night backgrounds with lights are actually attractive — keep them)"
+
+  - id: nightlife
+    name: "Nightlife/bar/club scene"
+    conditions:
+      scene_type: nightlife
+    preset:
+      name: "Adaptive: Portrait > Enhance Portrait"
+      path: "Premium > Adaptive: Portrait > Enhance Portrait"
+      also_apply: "Premium > Adaptive: Subject > Vibrant"
+      evidence: "Social photos increase match rates by 30% (Hinge) but bar lighting destroys skin tones. Enhance Portrait AI-corrects facial color. Vibrant restores color pop lost in dark environments."
+      avoid: "Smooth Facial Skin (low-light photos + smoothing = obvious fake look)"
+
+  - id: beach_water
+    name: "Beach/water outdoor scene"
+    conditions:
+      scene_type: outdoor
+      lighting: [natural_warm, golden_hour]
+    preset:
+      name: "Adaptive: Subject > Warm Pop"
+      path: "Premium > Adaptive: Subject > Warm Pop"
+      also_apply: "Premium > Adaptive: Sky > Blue Pop"
+      evidence: "Beach photos benefit from warm subject + vibrant sky contrast. Warm tones on skin + blue sky = maximum visual appeal. Warm color temperature increases approach motivation (Stanford)."
+      avoid: "Cool/desaturated presets — beach photos should feel warm and inviting"
+
+  - id: activity_outdoor
+    name: "Hiking/nature/sports activity"
+    conditions:
+      scene_type: outdoor
+      face_visible: [yes, partial, no]
+    preset:
+      name: "Adaptive: Subject > Vibrant"
+      path: "Premium > Adaptive: Subject > Vibrant"
+      also_apply: null
+      evidence: "Activity photos demonstrate lifestyle — profiles with activity photos get more messages. Vibrant makes you pop from natural backgrounds without looking over-edited."
+      avoid: "Portrait-specific presets if face isn't clearly visible (AI mask won't work well)"
+
+  - id: group_social_good_light
+    name: "Group/social photo, well-lit"
+    conditions:
+      face_visible: [yes, partial]
+    preset:
+      name: "Portraits: Group"
+      path: "Premium > Portraits: Group"
+      also_apply: null
+      evidence: "Group presets optimize for multiple faces simultaneously. Social proof photos are essential — Hinge reports 1-2 social photos increase match rates 30%. Well-lit group photos need minimal editing."
+      avoid: "Single-subject Adaptive presets (they may enhance one person and ignore others)"
+
+  - id: group_social_low_light
+    name: "Group/social photo, low light"
+    conditions:
+      lighting: [artificial, mixed]
+    preset:
+      name: "Adaptive: Subject > Pop"
+      path: "Premium > Adaptive: Subject > Pop"
+      also_apply: null
+      evidence: "In dark group photos, you need to be identifiable. Pop increases subject brightness and contrast vs background. Pair with manual exposure +0.2 if needed."
+      avoid: "Blur Background (you want friends visible for social proof)"
+
+  - id: full_body_outdoor
+    name: "Full body/outfit shot, outdoor"
+    conditions:
+      scene_type: outdoor
+      face_visible: [yes, partial, no]
+    preset:
+      name: "Adaptive: Subject > Light"
+      path: "Premium > Adaptive: Subject > Light"
+      also_apply: null
+      evidence: "Full body shots show physique and style. Light preset brightens the subject evenly without creating the harsh look that manual exposure boost causes. Bright photos get more swipes."
+      avoid: "Heavy face presets — full body shots are about the whole picture"
+
+  - id: full_body_indoor
+    name: "Full body/outfit shot, indoor"
+    conditions:
+      scene_type: indoor
+      face_visible: [yes, partial, no]
+    preset:
+      name: "Adaptive: Subject > Warm Light"
+      path: "Premium > Adaptive: Subject > Warm Light"
+      also_apply: "Premium > Adaptive: Blur Background > Subtle"
+      evidence: "Indoor full body photos often have cluttered backgrounds. Subtle blur focuses attention on you. Warm Light adds the warmth advantage. Background blur increases engagement (professional photographer consensus)."
+      avoid: "Strong blur (looks obviously fake on full body shots)"
+
+  - id: professional_formal
+    name: "Professional/formal/dressed up"
+    conditions:
+      face_visible: [yes, partial]
+    preset:
+      name: "Adaptive: Portrait > Polished Portrait"
+      path: "Premium > Adaptive: Portrait > Polished Portrait"
+      also_apply: null
+      evidence: "Professional photos need the most subtle editing. Polished Portrait provides the minimum viable enhancement — sharp, clean, natural. Trustworthiness is #1 predictor of right-swipes (Photofeeler)."
+      avoid: "Anything warm/stylized — formal photos should read as natural and reliable"
+
+  - id: travel_scenic
+    name: "Travel/cool location"
+    conditions:
+      scene_type: [outdoor, urban]
+    preset:
+      name: "Adaptive: Subject > Vibrant"
+      path: "Premium > Adaptive: Subject > Vibrant"
+      also_apply: null
+      evidence: "Travel photos show lifestyle and adventure. Vibrant makes both you and the location look appealing. The location is part of the appeal — don't over-process it."
+      avoid: "Heavy portrait presets (the scene is as important as you in travel photos)"
+
+  - id: bad_colors
+    name: "Photo with bad/mixed colors"
+    conditions:
+      color_quality: bad_mix
+    preset:
+      name: "Portraits: Black & White"
+      path: "Premium > Portraits: Black & White"
+      also_apply: null
+      evidence: "A single B&W photo increases profile engagement by 10% (OkCupid). B&W rescues photos with unfixable color problems. Use max 1 per profile — multiple B&W photos decrease engagement."
+      avoid: "Color correction presets (if colors are truly bad, B&W is more reliable than trying to fix them)"
+
+  - id: too_dark
+    name: "Photo that's too dark/underexposed"
+    conditions:
+      photo_quality: [0, 1, 2, 3, 4, 5]
+    preset:
+      name: "Adaptive: Subject > Light"
+      path: "Premium > Adaptive: Subject > Light"
+      also_apply: "Premium > Adaptive: Portrait > Enhance Portrait"
+      evidence: "Dark photos get significantly fewer interactions. Light preset targets the subject specifically rather than blowing out the whole image. Enhance Portrait recovers facial detail lost in shadow."
+      avoid: "Global exposure presets (they brighten everything including already-bright areas)"
+
+  - id: busy_background
+    name: "Photo with distracting background"
+    conditions: {}
+    preset:
+      name: "Adaptive: Blur Background > Subtle"
+      path: "Premium > Adaptive: Blur Background > Subtle"
+      also_apply: "Premium > Adaptive: Subject > Pop"
+      evidence: "Background blur separates you from clutter. Use Subtle, not Strong — obvious fake bokeh hurts authenticity. Pop increases subject prominence after blur is applied."
+      avoid: "Strong blur, Circle, Geometric, Swirl variants (obvious and fake-looking)"
+
+  - id: face_in_shadow
+    name: "Face partially in shadow"
+    conditions:
+      face_visible: partial
+    preset:
+      name: "Adaptive: Portrait > Enhance Portrait"
+      path: "Premium > Adaptive: Portrait > Enhance Portrait"
+      also_apply: null
+      evidence: "Face visibility is the #1 factor in dating photo engagement (Hinge). Enhance Portrait uses AI masking to lift facial shadows specifically. Photos with clear face visibility get 30% more likes."
+      avoid: "Global shadow lifting (will flatten the whole image to fix one problem)"
+
+  - id: skin_blemishes
+    name: "Visible skin blemishes or uneven skin"
+    conditions:
+      face_visible: yes
+    preset:
+      name: "Adaptive: Portrait > Smooth Facial Skin"
+      path: "Premium > Adaptive: Portrait > Smooth Facial Skin"
+      also_apply: null
+      evidence: "Light skin smoothing can improve photo quality perception. But over-smoothing is the #1 cause of 'catfish' perception. Use conservatively."
+      avoid: "Stacking with Glamour Portrait (double-smoothing creates obviously fake skin)"
+
+# Danger zones — presets that risk looking fake
+danger_zones:
+  - preset: "Smooth Facial Skin"
+    risk: "Over-smoothing triggers uncanny valley / catfish perception"
+    safe_usage: "Only apply when skin texture is genuinely problematic. Never stack with Glamour."
+  - preset: "Whiten Teeth"
+    risk: "Glowing white teeth are an instant tell of over-editing"
+    safe_usage: "Only if teeth are noticeably yellow. Result should look natural, not bright white."
+  - preset: "Enhance Eyes"
+    risk: "Over-enhanced eyes look alien/unnatural"
+    safe_usage: "Acceptable in dark photos where eyes are barely visible. Skip in well-lit photos."
+  - preset: "Glamour Portrait"
+    risk: "Softens everything — can look like a beauty filter"
+    safe_usage: "Professional/formal photos only. Never for casual/social photos."
+  - preset: "Adaptive: Blur Background > Strong"
+    risk: "Obvious fake bokeh, especially on phone photos"
+    safe_usage: "Almost never. Use Subtle instead."
+  - preset: "Style: Futuristic"
+    risk: "Extremely stylized — screams 'filtered'"
+    safe_usage: "Avoid for dating profiles entirely."

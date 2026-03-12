@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+google-genai
+Pillow
+pillow-heif
+numpy
+python-dotenv
+python-multipart
+pyyaml
+pytest
+pytest-asyncio
+httpx

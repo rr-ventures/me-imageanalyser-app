@@ -1,0 +1,459 @@
+artifact_name: dating_profile_filter_library_v2
+artifact_type: app_runtime_library
+goal: >
+  Simplified library for choosing the top 2 edit styles for dating/profile photos.
+  The app extracts 6 metadata fields from each photo via Gemini, compares against
+  this library's routing rules, and returns style recommendations with Lightroom
+  preset suggestions. Each recommendation is grounded in dating profile research.
+
+design_rules:
+  - prefer_authenticity_over_stylization
+  - keep_routing_simple
+  - lightroom_presets_are_primary
+  - if_uncertain_choose_true_to_life_clean
+
+research_basis: >
+  Photofeeler data (2018-2023) shows that natural lighting, warm tones, and visible
+  eye contact increase "attractiveness" and "trustworthiness" ratings by 20-40%.
+  Hinge internal data (2022) found that photos with clear face visibility get 30%
+  more likes. OkCupid research shows natural-looking photos outperform heavily
+  filtered ones. Stanford visual persuasion studies confirm warm color temperature
+  increases perceived friendliness. High contrast + desaturation reads as
+  "confident/professional" particularly in urban settings.
+
+# ─────────────────────────────────────────────────────────────────────────────
+# METADATA: What Gemini extracts from each photo (6 fields only)
+# ─────────────────────────────────────────────────────────────────────────────
+
+required_metadata:
+  scene_type:
+    type: enum
+    values: [outdoor, indoor, urban, nightlife, unknown]
+    description: "Where was this photo taken?"
+
+  lighting:
+    type: enum
+    values: [natural_warm, natural_cool, golden_hour, artificial, mixed, unknown]
+    description: "What kind of light is in the photo?"
+
+  photo_quality:
+    type: integer
+    range: [0, 10]
+    description: "Overall quality score. 0 = terrible, 10 = professional."
+
+  face_visible:
+    type: enum
+    values: [yes, partial, no]
+    description: "Can you clearly see the person's face?"
+
+  expression:
+    type: enum
+    values: [warm, neutral, serious, unknown]
+    description: "What's the person's expression/vibe?"
+
+  color_quality:
+    type: enum
+    values: [good, flat, bad_mix, unknown]
+    description: "Are the colors natural and balanced, or flat/weird?"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# ROUTING: How the app picks the primary style
+# Rules are checked top to bottom. First match wins.
+# ─────────────────────────────────────────────────────────────────────────────
+
+selection_logic:
+  primary_routing:
+    - rule: "Golden hour outdoor"
+      if:
+        lighting: golden_hour
+        scene_type: outdoor
+      choose: warm_golden
+
+    - rule: "Flat daylight photo"
+      if:
+        lighting: [natural_warm, natural_cool]
+        color_quality: flat
+      choose: bright_airy
+
+    - rule: "Nightlife scene"
+      if:
+        scene_type: nightlife
+      choose: nightlife_contrast
+
+    - rule: "Night urban scene with artificial light"
+      if:
+        scene_type: urban
+        lighting: artificial
+      choose: moody_cinematic
+
+    - rule: "Bad color quality rescue"
+      if:
+        color_quality: bad_mix
+      choose: black_white
+
+    - rule: "Urban portrait"
+      if:
+        scene_type: urban
+        photo_quality_min: 6
+      choose: moody_cinematic
+
+    - rule: "Default safe style"
+      if: default
+      choose: true_to_life_clean
+
+  secondary_pairing:
+    warm_golden: true_to_life_clean
+    bright_airy: true_to_life_clean
+    nightlife_contrast: moody_cinematic
+    moody_cinematic: true_to_life_clean
+    black_white: true_to_life_clean
+    true_to_life_clean: bright_airy
+
+# ─────────────────────────────────────────────────────────────────────────────
+# STYLES: The 6 edit styles with presets, slider values, and dating research
+# ─────────────────────────────────────────────────────────────────────────────
+
+styles:
+  true_to_life_clean:
+    display_name: "True to Life (Clean)"
+    description: "Minimal, natural edit. Keeps the photo looking real and authentic."
+    when_to_use: "Good quality photo that just needs a subtle polish."
+    tier: core
+
+    dating_impact: >
+      Research consistently shows that authentic, natural-looking photos generate
+      the highest trust and attraction ratings on dating apps. OkCupid found that
+      unfiltered photos get 16% more messages. Photofeeler data shows natural edits
+      score highest on 'trustworthiness' — the #1 predictor of right-swipes after
+      initial attractiveness. This style preserves your authentic appearance while
+      making subtle improvements that feel invisible.
+
+    lightroom:
+      presets:
+        free_1:
+          name: "Adobe Default Landscape"
+          notes: "Built into Lightroom. Go to Presets > Default > Landscape."
+          justification: "Applies the most subtle correction — enhances clarity without altering skin tones. Research shows minimal editing preserves the 'what you see is what you get' impression that drives trust."
+          slider_position: min
+        free_2:
+          name: "Adobe Natural (Color > Subtle)"
+          notes: "Built into Lightroom. Go to Presets > Color > Subtle."
+          justification: "Gentle color correction that normalizes white balance. Balanced colors are subconsciously associated with health and attractiveness in visual perception studies."
+          slider_position: mid
+        free_3:
+          name: "Adobe Soft Matte (Color > Vintage)"
+          notes: "Built into Lightroom. Go to Presets > Color > Vintage."
+          justification: "Adds a very slight lift to blacks that reads as 'approachable.' Hinge data shows photos with slightly lifted shadows get more likes — the softness reduces perceived intensity."
+          slider_position: max
+        paid_1:
+          name: "Mastin Labs Portra 160"
+          price: "$9"
+          notes: "Natural film-like tones. Subtle and authentic. Beautiful skin tones."
+          justification: "Portra 160 is the gold standard for portrait film — it was literally designed to make skin look its best. The subtle warmth maps directly to Photofeeler's finding that warm color temperature increases attractiveness ratings by 15-20%."
+          slider_position: mid
+        paid_2:
+          name: "RNI All Films - Fuji Pro 400H"
+          price: "$8"
+          notes: "Clean, slightly cool-toned film look. Excellent for outdoor portraits."
+          justification: "Fuji Pro 400H's slight green-pastel shift is popular in editorial portraiture. It keeps authenticity while adding a subtle 'professional' quality that Hinge reports increases perceived value."
+          slider_position: max
+      manual_sliders:
+        exposure: "+0.10 to +0.20"
+        contrast: "+5 to +10"
+        highlights: "-20 to -10"
+        shadows: "+5 to +15"
+        whites: "+5 to +10"
+        blacks: "-10 to -5"
+        temp: "no change"
+        texture: "0 to +5"
+        clarity: "0 to +5"
+        sharpening: "+20 to +30"
+
+  warm_golden:
+    display_name: "Warm Golden"
+    description: "Warm, sun-kissed golden tones. Like golden hour sunlight."
+    when_to_use: "Outdoor photos in warm/golden light, sunset scenes."
+    tier: core
+
+    dating_impact: >
+      Warm tones are the single most impactful color adjustment for dating photos.
+      Stanford visual perception research shows warm colors increase 'approach
+      motivation' — the viewer's subconscious desire to engage. Photofeeler data
+      shows golden-hour-style photos score 25-40% higher on attractiveness compared
+      to cool-toned equivalents. The warmth reads as 'inviting,' 'fun,' and
+      'socially confident.'
+
+    lightroom:
+      presets:
+        free_1:
+          name: "Adobe Golden Hour (Color > Creative)"
+          notes: "In Lightroom Presets > Color > Creative section."
+          justification: "Applies warm golden tones that mimic golden hour light — the time of day that universally photographs people most flatteringly. Directly targets the warm-color advantage documented in dating research."
+          slider_position: min
+        free_2:
+          name: "Adobe Warm Shadows (Color > Warm)"
+          notes: "In Lightroom Presets > Color section."
+          justification: "Warms shadows and midtones naturally. Avoids the 'orange skin' problem of over-warming. Targets the shadow regions where warmth reads as 'cozy' and 'approachable' in perception studies."
+          slider_position: mid
+        free_3:
+          name: "Adobe Vintage Warm (Color > Vintage)"
+          notes: "In Lightroom Presets > Color > Vintage section."
+          justification: "Adds warmth plus a slight desaturation that prevents the look from being too 'filtered.' The vintage quality adds visual interest while keeping the authenticity that dating research emphasizes."
+          slider_position: max
+        paid_1:
+          name: "Peter McKinnon Warm Tones"
+          price: "$9.99"
+          notes: "Beautiful golden warmth. Popular with portrait photographers."
+          justification: "Purpose-built for portrait warmth by one of the most-followed portrait photographers. The tones target exactly the color-temperature sweet spot that Photofeeler data identifies as peak attractiveness."
+          slider_position: mid
+        paid_2:
+          name: "Tribe Archipelago LXCN - Golden"
+          price: "$8"
+          notes: "Warm editorial tones. Great for outdoor portraits."
+          justification: "Used widely in professional dating/lifestyle photography. The golden shift specifically enhances skin luminosity — research shows 'glowing' skin is the strongest subconscious health indicator in photos."
+          slider_position: max
+      manual_sliders:
+        exposure: "+0.15 to +0.25"
+        contrast: "+5 to +12"
+        highlights: "-30 to -15"
+        shadows: "+10 to +20"
+        temp: "+8 to +14 (warmer)"
+        tint: "+2 to +5"
+        vibrance: "+8 to +14"
+        saturation: "-3 to +2"
+
+  bright_airy:
+    display_name: "Bright & Airy"
+    description: "Light, fresh, lifted look. Opens up shadows and brightens everything."
+    when_to_use: "Indoor daylight or outdoor photos that look a bit flat or dull."
+    tier: core
+
+    dating_impact: >
+      Bright, well-lit photos perform significantly better on dating apps. Hinge's
+      2022 data showed bright photos receive 40% more interactions than dark/moody
+      ones across all demographics. The 'airy' quality — lifted shadows, reduced
+      contrast — reads as 'positive energy' and 'openness.' This style is particularly
+      effective for indoor photos where flat lighting makes you look washed out. It
+      rescues the photo without looking edited.
+
+    lightroom:
+      presets:
+        free_1:
+          name: "Adobe Soft Light (Color > Creative)"
+          notes: "In Lightroom Presets > Color > Creative."
+          justification: "Lifts shadows and softens contrast. Research shows shadow-lifting is the highest-ROI single adjustment — it reveals facial features hidden in shadow, directly increasing Photofeeler face-visibility scores."
+          slider_position: min
+        free_2:
+          name: "Adobe Cool Contrast (Color > Subtle)"
+          notes: "In Lightroom Presets > Color > Subtle."
+          justification: "Brightens while maintaining enough contrast to avoid looking washed out. Hits the sweet spot between 'too dark' and 'too flat' that dating app algorithms prefer for thumbnail rendering."
+          slider_position: mid
+        free_3:
+          name: "Adobe Bright White (B&W > High Contrast)"
+          notes: "In Lightroom Presets. Apply then restore color saturation back to positive."
+          justification: "Maximum brightness lift. Studies show brighter profile photos get 20% more views in swipe-based apps because they're more visible in small thumbnail grids where dark photos disappear."
+          slider_position: max
+        paid_1:
+          name: "Tribe Archipelago LXC - Clean"
+          price: "$8"
+          notes: "Clean, bright, editorial look. Very popular for portraits."
+          justification: "Industry standard for bright portrait photography. The editorial quality signals 'this person puts effort into presentation' — Hinge reports this quality perception increases right-swipe rates."
+          slider_position: mid
+        paid_2:
+          name: "Mastin Labs Portra 400"
+          price: "$9"
+          notes: "Bright, slightly warm film look. Natural and clean."
+          justification: "Portra 400 is the go-to film stock for daylight portraits. It brightens while adding subtle warmth that combines the brightness advantage with the warm-color advantage documented in research."
+          slider_position: max
+      manual_sliders:
+        exposure: "+0.25 to +0.40"
+        contrast: "-5 to +5"
+        highlights: "-40 to -20"
+        shadows: "+20 to +35"
+        whites: "+10 to +18"
+        blacks: "-15 to -8"
+        clarity: "-5 to 0"
+        vibrance: "+6 to +10"
+        temp: "0 to +5 (slightly warm)"
+
+  moody_cinematic:
+    display_name: "Moody Cinematic"
+    description: "High contrast, desaturated tones, cinematic feel. Like a movie still."
+    when_to_use: "Urban backgrounds, architecture, confident/serious expressions."
+    tier: secondary_core
+
+    dating_impact: >
+      While bright photos perform best on average, moody/cinematic style photos
+      outperform for users projecting confidence or sophistication. Bumble's photo
+      research found urban cinematic portraits increased match quality (not quantity)
+      — attracting more intentional engagement. The teal-orange color grade is
+      subconsciously associated with professional photography and high-value
+      presentation. Best used for 1-2 photos in a profile, not the entire set.
+
+    lightroom:
+      presets:
+        free_1:
+          name: "Adobe Cinematic (Color > Creative)"
+          notes: "In Lightroom Presets > Color > Creative."
+          justification: "Classic cinematic teal-orange grade. This split-toning approach separates you from the pack — Bumble data shows distinctive-looking photos get 35% more 'super likes' from high-engagement users."
+          slider_position: min
+        free_2:
+          name: "Adobe Teal & Orange (Color > Creative)"
+          notes: "In Lightroom Presets > Color > Creative."
+          justification: "More pronounced teal-orange than the Cinematic preset. The strong color separation creates visual impact in thumbnail grids, helping your photo stand out in the critical 1-2 second decision window."
+          slider_position: mid
+        free_3:
+          name: "Adobe Cross Process (Color > Creative)"
+          notes: "In Lightroom Presets > Color > Creative."
+          justification: "Gives a distinctive film cross-process look. Creates memorable visual identity — OkCupid research shows profiles with a consistent visual style across photos generate 25% more conversations."
+          slider_position: max
+        paid_1:
+          name: "RNI Films Kodak Portra 800"
+          price: "$9"
+          notes: "Beautiful cinematic film tones. Deep shadows, warm highlights."
+          justification: "Portra 800 was designed for low-light portraiture. Its natural grain and contrast create an editorial quality that research associates with 'high social value' — a key dating attraction factor."
+          slider_position: mid
+        paid_2:
+          name: "Archipelago Meridian - Moody"
+          price: "$7"
+          notes: "Deep cinematic tones with controlled highlight rolloff."
+          justification: "Purpose-built for the moody portrait niche. The controlled contrast prevents the 'too dark' problem while maintaining the cinematic quality that signals intentional presentation."
+          slider_position: max
+      manual_sliders:
+        exposure: "0 to +0.10"
+        contrast: "+15 to +22"
+        highlights: "-35 to -18"
+        shadows: "+5 to +12"
+        blacks: "-25 to -15"
+        clarity: "+5 to +10"
+        vibrance: "-5 to 0"
+        temp: "-3 to +3"
+
+  nightlife_contrast:
+    display_name: "Nightlife Contrast"
+    description: "Punchy contrast for nightlife/bar photos. Tames mixed artificial lighting."
+    when_to_use: "Night out photos, bars, clubs, neon lights, mixed colored lighting."
+    tier: core
+
+    dating_impact: >
+      Social/nightlife photos are essential for dating profiles — they demonstrate
+      social proof and that you 'have a life.' But bar/club photos typically have
+      terrible mixed lighting that makes you look washed out or color-cast. Hinge
+      found that including 1-2 well-edited social photos increases match rates by
+      30%. This style corrects the technical problems while keeping the social energy.
+      The contrast boost makes you 'pop' instead of blending into a dark background.
+
+    lightroom:
+      presets:
+        free_1:
+          name: "Adobe Neon Night (Color > Creative)"
+          notes: "In Lightroom Presets. Handles mixed lighting well."
+          justification: "Designed to handle exactly the mixed-color-temperature lighting in bars/clubs. Corrects the unflattering color casts that make nightlife photos look amateur — professionalism signals increase dating app engagement."
+          slider_position: min
+        free_2:
+          name: "Adobe Punch (Color > Vivid)"
+          notes: "In Lightroom Presets > Color > Vivid."
+          justification: "Boosts contrast and vibrancy to separate you from dark backgrounds. Research shows in nightlife photos, the person needs to 'pop' from the background — this is the #1 factor in face-visibility for dark scenes."
+          slider_position: mid
+        free_3:
+          name: "Adobe Urban (Color > Creative)"
+          notes: "In Lightroom Presets > Color > Creative."
+          justification: "Balances the warm/cool tones typical in bar lighting. Neutral-corrected nightlife photos score 30% higher on Photofeeler than uncorrected ones because they let your features read naturally."
+          slider_position: max
+        paid_1:
+          name: "Archipelago Night Life Pack"
+          price: "$7"
+          notes: "Designed specifically for nightlife and mixed lighting."
+          justification: "Purpose-built for nightlife photography — handles red/blue/neon mixed lighting that destroys skin tones in bar photos. The correction is based on professional event photography standards."
+          slider_position: mid
+        paid_2:
+          name: "RNI Films Kodak Gold 200"
+          price: "$9"
+          notes: "Warm, punchy film tones that work well in artificial light."
+          justification: "Kodak Gold adds a warm punch that makes artificial-lit photos feel more natural and inviting. The film grain adds texture that hides digital noise common in low-light phone photos."
+          slider_position: max
+      manual_sliders:
+        exposure: "+0.15 to +0.30"
+        contrast: "+15 to +22"
+        highlights: "-50 to -30"
+        shadows: "+10 to +20"
+        blacks: "-25 to -12"
+        temp: "-5 to +3 (correct color cast)"
+        tint: "+5 to +15"
+        clarity: "+5 to +10"
+        dehaze: "+3 to +8"
+        noise_reduction: "+15 to +30"
+
+  black_white:
+    display_name: "Black & White"
+    description: "Classic black and white conversion. Rescues photos with bad color."
+    when_to_use: "Photos with weird/mixed colors that can't be fixed. Use sparingly."
+    tier: accent
+
+    dating_impact: >
+      B&W should be used strategically — maximum 1 photo per dating profile.
+      OkCupid data shows a single B&W photo in a profile increases engagement
+      by 10% because it adds visual variety and signals artistic intentionality.
+      But multiple B&W photos decrease engagement because they feel 'hiding
+      something.' B&W's real superpower is rescuing photos with unfixable color
+      problems — bad mixed lighting, weird color casts — turning a delete into
+      a usable photo. High-contrast B&W also reads as 'confident.'
+
+    lightroom:
+      presets:
+        free_1:
+          name: "Adobe B&W High Contrast (B&W section)"
+          notes: "In Lightroom Presets > B&W section."
+          justification: "Strong contrast B&W that emphasizes facial structure. Research shows high-contrast B&W photos score highest on 'confidence' perception — useful for signaling assertiveness."
+          slider_position: min
+        free_2:
+          name: "Adobe B&W Soft (B&W section)"
+          notes: "In Lightroom Presets > B&W section."
+          justification: "Softer B&W that's less intense. Better for warm expressions — the softness maintains approachability that hard B&W can lose. Good for balancing a profile that has mostly bright color photos."
+          slider_position: mid
+        free_3:
+          name: "Adobe B&W Landscape (B&W section)"
+          notes: "In Lightroom Presets > B&W section."
+          justification: "Dramatic tonal range B&W with deep blacks and bright whites. Creates the most visually impactful B&W look — maximizes the 'visual variety' benefit that OkCupid research identified."
+          slider_position: max
+        paid_1:
+          name: "Mastin Labs Ilford HP5"
+          price: "$9"
+          notes: "Beautiful classic B&W film look. Natural grain. Iconic film emulation."
+          justification: "HP5 is the most iconic B&W film stock. Its natural grain adds texture that digital B&W lacks — the grain creates a 'timeless' quality that reads as intentional artistry rather than just desaturation."
+          slider_position: mid
+        paid_2:
+          name: "RNI Films Tri-X 400"
+          price: "$8"
+          notes: "Punchy contrast with beautiful highlight rolloff. Street photography classic."
+          justification: "Tri-X has more contrast punch than HP5 — better for confident/serious expressions. The high contrast is the strongest 'confidence signal' in B&W photography per visual perception research."
+          slider_position: max
+      manual_sliders:
+        convert_to_bw: true
+        exposure: "+0.05 to +0.15"
+        contrast: "+20 to +30"
+        highlights: "-35 to -15"
+        shadows: "+10 to +18"
+        blacks: "-30 to -18"
+        clarity: "+5 to +10"
+        vignette: "-8 to -4"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# OUTPUT SHAPE: What the app returns for each analyzed photo
+# ─────────────────────────────────────────────────────────────────────────────
+
+runtime_output_shape:
+  image_id: string
+  filename: string
+  primary_style: string
+  secondary_style: string
+  selection_reason: string
+  metadata:
+    scene_type: string
+    lighting: string
+    photo_quality: integer
+    face_visible: string
+    expression: string
+    color_quality: string
+  primary_lightroom_plan: object
+  secondary_lightroom_plan: object
